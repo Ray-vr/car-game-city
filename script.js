@@ -1,23 +1,24 @@
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+let speed = 0;
+let turn = 0;
 
-const car = new THREE.Mesh(
-  new THREE.BoxGeometry(2, 1, 4),
-  new THREE.MeshBasicMaterial({ color: 0xff0000 })
-);
-car.position.y = 0.5;
-scene.add(car);
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowUp") speed = 0.2;
+  if (e.key === "ArrowDown") speed = -0.2;
+  if (e.key === "ArrowLeft") turn = 0.05;
+  if (e.key === "ArrowRight") turn = -0.05;
+});
 
-camera.position.set(0, 5, 10);
-camera.lookAt(car.position);
+document.addEventListener("keyup", () => {
+  speed = 0;
+  turn = 0;
+});
 
 function animate() {
   requestAnimationFrame(animate);
-  car.position.z -= 0.1;
-  camera.position.z = car.position.z + 10;
+  car.rotation.y += turn;
+  car.position.x += Math.sin(car.rotation.y) * speed;
+  car.position.z += Math.cos(car.rotation.y) * speed;
+  camera.position.set(car.position.x, 5, car.position.z + 10);
+  camera.lookAt(car.position);
   renderer.render(scene, camera);
 }
-animate();
