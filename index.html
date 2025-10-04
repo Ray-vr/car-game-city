@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moto X3M Clone</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #f0f0f0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        // Get the canvas and its context
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Player physics
+        const player = {
+            x: 50,
+            y: canvas.height - 50,
+            radius: 15,
+            velX: 0,
+            velY: 0,
+            gravity: 0.5,
+            isJumping: false
+        };
+
+        // Game environment
+        const ground = {
+            x: 0,
+            y: canvas.height - 30,
+            width: canvas.width,
+            height: 30
+        };
+
+        // Handle user input
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'ArrowUp' && !player.isJumping) {
+                player.velY = -15;
+                player.isJumping = true;
+            }
+        });
+
+        // Update game state
+        function update() {
+            // Apply gravity
+            player.velY += player.gravity;
+            player.y += player.velY;
+
+            // Check for collision with the ground
+            if (player.y + player.radius > ground.y) {
+                player.y = ground.y - player.radius;
+                player.velY = 0;
+                player.isJumping = false;
+            }
+        }
+
+        // Draw the game
+        function draw() {
+            // Clear the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the ground
+            ctx.fillStyle = '#666';
+            ctx.fillRect(ground.x, ground.y, ground.width, ground.height);
+
+            // Draw the player (the bike)
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#333';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        // Main game loop
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start the game
+        gameLoop();
+    </script>
+</body>
+</html>
